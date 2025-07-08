@@ -1,0 +1,58 @@
+<div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+  <!-- Top right SVG decoration -->
+  <svg width="400" height="400" style="position: absolute; top: -80px; right: -80px; opacity: 0.18;" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="200" fill="url(#paint0_radial)" />
+    <defs>
+      <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientTransform="translate(200 200) scale(200)" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#6a11cb"/>
+        <stop offset="1" stop-color="#4f8cff" stop-opacity="0.6"/>
+      </radialGradient>
+    </defs>
+  </svg>
+  <!-- Bottom left SVG decoration -->
+  <svg width="300" height="300" style="position: absolute; bottom: -60px; left: -60px; opacity: 0.15;" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="150" r="150" fill="url(#paint1_radial)" />
+    <defs>
+      <radialGradient id="paint1_radial" cx="0" cy="0" r="1" gradientTransform="translate(150 150) scale(150)" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#38d39f"/>
+        <stop offset="1" stop-color="#6a11cb" stop-opacity="0.5"/>
+      </radialGradient>
+    </defs>
+  </svg>
+</div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background: linear-gradient(135deg, #4f8cff 0%, #6a11cb 100%); position: relative; z-index: 1;">
+  <div class="card shadow-lg border-0 mx-auto" style="width: 100%; max-width: 400px; border-radius: 18px; overflow: hidden;">
+    <div class="card-header text-center bg-white border-0" style="padding: 2rem 1rem 1rem 1rem;">
+      <h1 class="card-title mb-2" style="font-weight: 700; color: #4f8cff; letter-spacing: 1px;">StockVault Admin</h1>
+      <p class="card-description mb-0" style="color: #6a11cb;">Sign in to access the admin panel</p>
+    </div>
+    <div class="card-content bg-white" style="padding: 2rem 2rem 1.5rem 2rem;">
+      <% if (typeof error_msg !=='undefined' && error_msg) { %>
+        <div class="alert alert-danger mb-4">
+          <%= error_msg %>
+        </div>
+      <% } %>
+      <% if (typeof errors !=='undefined' && errors && errors.length> 0) { %>
+        <div class="alert alert-danger mb-4">
+          <% errors.forEach(error=> { %>
+            <p><%= error.msg %></p>
+          <% }) %>
+        </div>
+      <% } %>
+      <form action="/admin/login" method="POST" class="w-100" style="max-width: 320px; margin: 0 auto;">
+        <div class="form-group mb-3">
+          <label for="username" class="form-label" style="font-weight: 500;">Admin Username</label>
+          <input type="text" id="username" name="username" class="form-control" placeholder="admin" value="<%= typeof username !== 'undefined' ? username : '' %>" required style="border-radius: 8px; width: 100%; min-width: 0;">
+        </div>
+        <div class="form-group mb-3">
+          <label for="password" class="form-label" style="font-weight: 500;">Password</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Password" required style="border-radius: 8px; width: 100%; min-width: 0;">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block w-100" style="background: linear-gradient(90deg, #38d39f 0%, #6a11cb 100%); border: none; border-radius: 8px; font-weight: 600; width: 100%;">Sign In</button>
+      </form>
+      <div class="mt-4 text-center">
+        <a href="/" class="text-muted">&larr; Back to site</a>
+      </div>
+    </div>
+  </div>
+</div>

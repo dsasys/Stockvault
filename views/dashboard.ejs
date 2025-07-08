@@ -1,0 +1,352 @@
+<style>
+.dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 60%, #38d39f 100%);
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+.dashboard-card {
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(80,80,120,0.10);
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+.dashboard-card:hover {
+  box-shadow: 0 8px 32px rgba(80,80,120,0.16);
+}
+.dashboard-title {
+  font-weight: 800;
+  color: #4f8cff;
+  letter-spacing: 1px;
+  margin-bottom: 0.5em;
+}
+.dashboard-section-title {
+  color: #38d39f;
+  font-weight: 700;
+  margin-bottom: 0.7em;
+}
+.dashboard-balance {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #38d39f;
+}
+.dashboard-profit {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+</style>
+<div class="dashboard-bg">
+  <% const tips = [
+    "Buy low, sell high!",
+    "Diversify your portfolio to manage risk.",
+    "Don’t let emotions drive your trades.",
+    "Review your investments regularly.",
+    "Set clear goals before investing.",
+    "Stay informed with market news.",
+    "Patience is key to long-term success.",
+    "Cut your losses early, let your winners run.",
+    "Invest only what you can afford to lose.",
+    "Keep learning—markets evolve!",
+    "Success is the sum of small efforts repeated day in and day out.",
+    "Opportunities don't happen, you create them.",
+    "The stock market is a device for transferring money from the impatient to the patient."
+  ];
+  const randomTip = tips[Math.floor(Math.random() * tips.length)];
+  const username = user && user.username ? user.username : 'Trader'; %>
+  <div class="container" style="max-width: 700px; margin: 0 auto;">
+    <div class="card dashboard-card mb-4" style="background: linear-gradient(90deg, #e0e7ff 0%, #f8fafc 60%, #38d39f 100%); color: #333; border: none; box-shadow: 0 2px 12px rgba(80,80,120,0.10);">
+      <div class="card-body" style="padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.2rem;">
+        <div style="font-size: 2.2em; color: #4f8cff;"><i class="fas fa-hand-wave"></i></div>
+        <div>
+          <div style="font-size: 1.25em; font-weight: 700; color: #4f8cff;">Hello, <%= username %>!</div>
+          <div style="font-size: 1.08em; color: #6a11cb; margin-top: 0.2em;">
+            <i class="fas fa-lightbulb mr-1"></i> <%= randomTip %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container py-5">
+    <h1 class="dashboard-title mb-4">Dashboard</h1>
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-4 mb-5" style="gap: 2rem;">
+      <!-- Account Balance Card -->
+      <div class="card dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title">Account Balance</h3>
+        </div>
+        <div class="card-content">
+          <p class="dashboard-balance">
+            $<% if (typeof user.balance==='number' ) { %>
+              <%= user.balance.toFixed(2) %>
+            <% } else { %>
+              <%= parseFloat(user.balance || 0).toFixed(2) %>
+            <% } %>
+          </p>
+          <a href="/wallet" class="btn btn-outline btn-block">Manage Funds</a>
+        </div>
+      </div>
+      <!-- Portfolio Value Card -->
+      <div class="card dashboard-card">
+        <div class="card-content">
+          <p class="text-muted mb-1">Portfolio Value</p>
+          <h2 class="mb-2">
+            <i class="fas fa-briefcase text-muted"></i>
+            $<%= portfolioValue.toFixed(2) %>
+          </h2>
+          <div>
+            <% if (portfolioProfit>= 0) { %>
+              <i class="fas fa-arrow-up text-success"></i>
+              <span class="dashboard-profit text-success">
+                +$<%= portfolioProfit.toFixed(2) %> (<%= portfolioProfitPercent.toFixed(2) %>%)
+              </span>
+            <% } else { %>
+              <i class="fas fa-arrow-down text-danger"></i>
+              <span class="dashboard-profit text-danger">
+                -$<%= Math.abs(portfolioProfit).toFixed(2) %> (<%= Math.abs(portfolioProfitPercent).toFixed(2) %>%)
+              </span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <!-- Active Stocks Card -->
+      <div class="card dashboard-card">
+        <div class="card-content">
+          <p class="text-muted mb-1">Active Stocks</p>
+          <h2 class="mb-2">
+            <i class="fas fa-chart-bar text-muted"></i>
+            <% if (holdings) { %>
+              <%= holdings.length %>
+            <% } else { %>0<% } %>
+          </h2>
+          <a href="/portfolio" class="btn btn-outline btn-block">View Portfolio</a>
+        </div>
+      </div>
+      <!-- Market Status Card -->
+      <div class="card dashboard-card">
+        <div class="card-content">
+          <p class="text-muted mb-1">Market Status</p>
+          <h2 class="mb-2">
+            <i class="fas fa-clock text-muted"></i>
+            Open
+          </h2>
+          <a href="/stocks" class="btn btn-outline btn-block">View Market</a>
+        </div>
+      </div>
+    </div>
+    <!-- Portfolio Summary -->
+    <% if (holdings && holdings.length> 0) { %>
+      <div class="card dashboard-card mb-5">
+        <div class="card-header">
+          <h3 class="card-title dashboard-section-title">Portfolio Summary</h3>
+        </div>
+        <div class="card-content">
+          <div class="grid grid-cols-4 gap-6">
+            <div>
+              <p class="text-muted">Total Value</p>
+              <p class="text-2xl font-bold">$<%= portfolioValue.toFixed(2) %></p>
+            </div>
+            <div>
+              <p class="text-muted">Total Cost</p>
+              <p class="text-2xl font-bold">$<%= portfolioCost.toFixed(2) %></p>
+            </div>
+            <div>
+              <p class="text-muted">Total Profit/Loss</p>
+              <div class="flex items-center">
+                <i class="fas fa-<%= portfolioProfit >= 0 ? 'arrow-up' : 'arrow-down' %> mr-1 <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>"></i>
+                <p class="text-2xl font-bold <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                  <%= portfolioProfit>= 0 ? '+' : '-' %>$<%= Math.abs(portfolioProfit).toFixed(2) %>
+                </p>
+              </div>
+            </div>
+            <div>
+              <p class="text-muted">Return</p>
+              <p class="text-2xl font-bold <%= portfolioProfit >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= portfolioProfit>= 0 ? '+' : '-' %><%= Math.abs(portfolioProfitPercent).toFixed(2) %>%
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+    <!-- Main Content -->
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Top Performers -->
+      <div class="card dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title dashboard-section-title">Top Performers</h3>
+          <p class="card-description">Best performing stocks today</p>
+        </div>
+        <div class="card-content">
+          <% var topStocks=[]; if (stocks && stocks.length> 0) {
+            topStocks = stocks.slice(); // Create a copy of the stocks array
+            // Sort by change_percent
+            topStocks.sort(function(a, b) {
+              var aChange = parseFloat(a.change_percent || 0);
+              var bChange = parseFloat(b.change_percent || 0);
+              return bChange - aChange;
+            });
+            // Get top 3
+            topStocks = topStocks.slice(0, 3);
+          }
+          %>
+          <div class="space-y-4">
+            <% if (topStocks && topStocks.length> 0) { %>
+              <% for (var i=0; i < topStocks.length; i++) { %>
+                <% var stock=topStocks[i]; %>
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p class="font-medium">
+                      <%= stock.name %>
+                    </p>
+                    <p class="text-muted">
+                      <%= stock.id %>
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-medium">
+                      $<% if (typeof stock.price==='number' ) { %>
+                        <%= stock.price.toFixed(2) %>
+                      <% } else { %>
+                        <%= parseFloat(stock.price || 0).toFixed(2) %>
+                      <% } %>
+                    </p>
+                    <% var stockChange=parseFloat(stock.change || 0); var stockChangePercent=parseFloat(stock.change_percent || 0); var changeClass=stockChange>= 0 ? 'text-success' : 'text-danger'; var changeSign = stockChange >= 0 ? '+' : '-'; %>
+                    <p class="<%= changeClass %>">
+                      <%= changeSign %>$<%= Math.abs(stockChange).toFixed(2) %> (<%= stockChangePercent.toFixed(2) %>%)
+                    </p>
+                  </div>
+                </div>
+              <% } %>
+            <% } else { %>
+              <p class="text-center text-muted">No stock data available</p>
+            <% } %>
+            <a href="/stocks" class="btn btn-outline btn-block mt-4">View All Stocks</a>
+          </div>
+        </div>
+      </div>
+      <!-- Your Holdings -->
+      <div class="card dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title dashboard-section-title">Your Holdings</h3>
+          <p class="card-description">Recent stocks in your portfolio</p>
+        </div>
+        <div class="card-content">
+          <% if (holdings && holdings.length> 0) { %>
+            <div class="space-y-4">
+              <% for (var i=0; i < Math.min(holdings.length, 5); i++) { %>
+                <% var holding=holdings[i]; %>
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p class="font-medium">
+                      <%= holding.name %>
+                    </p>
+                    <p class="text-muted">
+                      <%= holding.stock_id %>
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-medium">
+                      $<% if (typeof holding.price==='number' ) { %>
+                        <%= holding.price.toFixed(2) %>
+                      <% } else { %>
+                        <%= parseFloat(holding.price || 0).toFixed(2) %>
+                      <% } %>
+                    </p>
+                    <p class="text-muted">Qty: <%= holding.quantity %></p>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          <% } else { %>
+            <p class="text-center text-muted">No holdings found</p>
+          <% } %>
+          <a href="/portfolio" class="btn btn-outline btn-block mt-4">View Full Portfolio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Guide Button -->
+<button id="openGuidePopup" style="position: fixed; bottom: 32px; right: 32px; z-index: 1200; background: linear-gradient(90deg, #4f8cff 0%, #38d39f 100%); color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; box-shadow: 0 4px 16px rgba(80,80,120,0.18); font-size: 2em; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+  <i class="fas fa-question"></i>
+</button>
+<!-- Guide Popup Modal -->
+<div id="guidePopupModal" style="display:none; position: fixed; inset: 0; background: rgba(60,70,100,0.18); z-index: 1300; align-items: center; justify-content: center;">
+  <div style="background: #fff; border-radius: 18px; max-width: 480px; width: 95vw; padding: 2.5rem 2rem 2rem 2rem; box-shadow: 0 8px 32px rgba(80,80,120,0.18); position: relative;">
+    <button id="closeGuidePopup" style="position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 1.3em; color: #6a11cb; cursor: pointer;">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 style="color: #4f8cff; font-weight: 800; margin-bottom: 0.7em;">Welcome to StockVault!</h2>
+    <p style="color: #444; font-size: 1.08em; margin-bottom: 1.2em;">Here's a quick guide to help you get started and understand the platform:</p>
+    <ul style="list-style: none; padding: 0; color: #444; font-size: 1.05em; margin-bottom: 1.2em;">
+      <li style="margin-bottom: 0.7em;"><b>Dashboard:</b> Your home for portfolio summary, top stocks, and quick stats.</li>
+      <li style="margin-bottom: 0.7em;"><b>Stocks:</b> Browse, search, and trade stocks with real-time prices.</li>
+      <li style="margin-bottom: 0.7em;"><b>Portfolio:</b> Track your holdings, profit/loss, and performance.</li>
+      <li style="margin-bottom: 0.7em;"><b>Wallet:</b> Deposit or withdraw funds, view your balance, and manage transactions.</li>
+      <li style="margin-bottom: 0.7em;"><b>Transactions:</b> See your full trading and fund history.</li>
+      <li style="margin-bottom: 0.7em;"><b>Profile:</b> Update your info and upload a profile picture.</li>
+      <li style="margin-bottom: 0.7em;"><b>Admin:</b> (Admins only) Manage users, stocks, and platform data.</li>
+    </ul>
+    <h3 style="color: #38d39f; font-weight: 700; margin-bottom: 0.5em;">Key Terminologies</h3>
+    <ul style="list-style: none; padding: 0; color: #444; font-size: 1.01em;">
+      <li><b>P/L (Profit/Loss):</b> Difference between what you paid and current value.</li>
+      <li><b>Holding:</b> Stocks/assets you currently own.</li>
+      <li><b>Portfolio:</b> All your holdings and investments.</li>
+      <li><b>Market Order:</b> Buy/sell at the best available price.</li>
+      <li><b>Volume:</b> Number of shares traded in a period.</li>
+      <li><b>Equity:</b> Value of your shares in the market.</li>
+    </ul>
+    <div style="margin-top: 1.5em; color: #6a11cb; font-size: 1.08em; text-align: center;">
+      <i class="fas fa-lightbulb"></i> <b>Tip:</b> Use the navigation bar to explore all features. You can always open this guide from the floating button!
+    </div>
+  </div>
+</div>
+<script>
+  // Guide popup logic
+  const openGuideBtn = document.getElementById('openGuidePopup');
+  const guideModal = document.getElementById('guidePopupModal');
+  const closeGuideBtn = document.getElementById('closeGuidePopup');
+  if (openGuideBtn && guideModal && closeGuideBtn) {
+    openGuideBtn.onclick = () => guideModal.style.display = 'flex';
+    closeGuideBtn.onclick = () => guideModal.style.display = 'none';
+    guideModal.onclick = (e) => { if (e.target === guideModal) guideModal.style.display = 'none'; };
+  }
+</script>
+<!-- Glossary/Help Modal Trigger -->
+<div style="position: absolute; top: 32px; right: 32px; z-index: 10;">
+  <button id="glossaryHelpBtn" title="Trading Glossary" style="background: none; border: none; cursor: pointer; font-size: 1.7em; color: #4f8cff;">
+    <i class="fas fa-question-circle"></i>
+  </button>
+</div>
+<!-- Glossary Modal -->
+<div id="glossaryModal" style="display:none; position: fixed; inset: 0; background: rgba(60,70,100,0.18); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: #fff; border-radius: 16px; max-width: 420px; width: 90vw; padding: 2.2rem 2rem 1.5rem 2rem; box-shadow: 0 8px 32px rgba(80,80,120,0.18); position: relative;">
+    <button id="closeGlossaryModal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.3em; color: #6a11cb; cursor: pointer;">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 style="color: #4f8cff; font-weight: 700; margin-bottom: 1.2em;">Trading Glossary</h2>
+    <ul style="list-style: none; padding: 0; color: #444; font-size: 1.08em;">
+      <li style="margin-bottom: 0.7em;"><b>P/L (Profit/Loss):</b> The difference between what you paid for a stock and its current value.</li>
+      <li style="margin-bottom: 0.7em;"><b>Holding:</b> The stocks or assets you currently own.</li>
+      <li style="margin-bottom: 0.7em;"><b>Portfolio:</b> The collection of all your holdings and investments.</li>
+      <li style="margin-bottom: 0.7em;"><b>Market Order:</b> An order to buy or sell a stock immediately at the best available price.</li>
+      <li style="margin-bottom: 0.7em;"><b>Limit Order:</b> An order to buy or sell a stock at a specific price or better.</li>
+      <li style="margin-bottom: 0.7em;"><b>Volume:</b> The number of shares traded during a given period.</li>
+      <li style="margin-bottom: 0.7em;"><b>Change %:</b> The percentage change in a stock's price over a period.</li>
+      <li style="margin-bottom: 0.7em;"><b>Equity:</b> The value of your shares in the market.</li>
+    </ul>
+  </div>
+</div>
+<script>
+  // Glossary modal logic
+  const glossaryBtn = document.getElementById('glossaryHelpBtn');
+  const glossaryModal = document.getElementById('glossaryModal');
+  const closeGlossaryModal = document.getElementById('closeGlossaryModal');
+  if (glossaryBtn && glossaryModal && closeGlossaryModal) {
+    glossaryBtn.onclick = () => glossaryModal.style.display = 'flex';
+    closeGlossaryModal.onclick = () => glossaryModal.style.display = 'none';
+    glossaryModal.onclick = (e) => { if (e.target === glossaryModal) glossaryModal.style.display = 'none'; };
+  }
+</script>

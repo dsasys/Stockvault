@@ -1,0 +1,128 @@
+<div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+  <!-- Top right SVG decoration -->
+  <svg width="400" height="400" style="position: absolute; top: -80px; right: -80px; opacity: 0.18;" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="200" fill="url(#paint0_radial)" />
+    <defs>
+      <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientTransform="translate(200 200) scale(200)" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#6a11cb"/>
+        <stop offset="1" stop-color="#4f8cff" stop-opacity="0.6"/>
+      </radialGradient>
+    </defs>
+  </svg>
+  <!-- Bottom left SVG decoration -->
+  <svg width="300" height="300" style="position: absolute; bottom: -60px; left: -60px; opacity: 0.15;" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="150" r="150" fill="url(#paint1_radial)" />
+    <defs>
+      <radialGradient id="paint1_radial" cx="0" cy="0" r="1" gradientTransform="translate(150 150) scale(150)" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#38d39f"/>
+        <stop offset="1" stop-color="#6a11cb" stop-opacity="0.5"/>
+      </radialGradient>
+    </defs>
+  </svg>
+  <!-- Additional subtle pattern -->
+  <svg width="100%" height="100%" style="position: absolute; left: 0; top: 0; opacity: 0.07;" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="1440" height="900" fill="url(#pattern1)"/>
+    <defs>
+      <linearGradient id="pattern1" x1="0" y1="0" x2="1440" y2="900" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#4f8cff"/>
+        <stop offset="1" stop-color="#38d39f"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 100vh; background: linear-gradient(135deg, #4f8cff 0%, #6a11cb 100%); position: relative; z-index: 1;">
+  <div class="card shadow-lg border-0 mx-auto" style="width: 100%; max-width: 440px; border-radius: 18px; overflow: hidden;">
+    <div class="card-header text-center bg-white border-0" style="padding: 2rem 1rem 1rem 1rem;">
+      <h1 class="card-title mb-2 animated-text" style="font-weight: 700; color: #4f8cff; letter-spacing: 1px; min-height: 2.5em;"></h1>
+      <p class="card-description mb-0" style="color: #6a11cb;">Sign in to access your account</p>
+    </div>
+    <div class="card-content bg-white d-flex flex-column align-items-center" style="padding: 2rem 2rem 1.5rem 2rem;">
+      <div class="login-tabs">
+        <button id="userTab" class="login-tab-btn active" type="button">User Login</button>
+        <!-- Removed Admin Login tab/button -->
+      </div>
+      <form id="userLoginForm" action="/auth/login" method="POST" class="login-form active">
+        <h3>User Login</h3>
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="you@example.com" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+        </div>
+        <div class="form-group mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+        <div class="text-end mb-3">
+          <a href="/auth/forgot-password" class="text-primary" style="font-size: 0.95em;">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block w-100">Login</button>
+      </form>
+      <!-- Removed admin login form from tab section -->
+      <div class="login-info-section">
+        <p>Don't have an account?
+          <a href="/auth/register" class="text-primary">Register</a>
+        </p>
+        <a href="/admin/login" target="_blank" class="btn btn-outline">Test Admin Login</a>
+        <!-- Removed the info-tip demo credentials text -->
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// Animated text logic
+const phrases = [
+  "Welcome to StockVault!",
+  "Secure. Fast. Reliable.",
+  "Your gateway to smart trading.",
+  "Admin & User Login Available!"
+];
+let phraseIndex = 0, charIndex = 0, isDeleting = false;
+const el = document.querySelector('.animated-text');
+function type() {
+  if (!el) return;
+  const current = phrases[phraseIndex];
+  if (isDeleting) {
+    el.textContent = current.substring(0, charIndex--);
+    if (charIndex < 0) {
+      isDeleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      setTimeout(type, 600);
+    } else {
+      setTimeout(type, 40);
+    }
+  } else {
+    el.textContent = current.substring(0, charIndex++);
+    if (charIndex > current.length) {
+      isDeleting = true;
+      setTimeout(type, 1200);
+    } else {
+      setTimeout(type, 70);
+    }
+  }
+}
+type();
+// Tab switching logic
+const userTab = document.getElementById('userTab');
+const adminTab = document.getElementById('adminTab');
+const userLoginForm = document.getElementById('userLoginForm');
+const adminLoginForm = document.getElementById('adminLoginForm');
+userTab.addEventListener('click', function() {
+  userTab.classList.add('active');
+  adminTab.classList.remove('active');
+  userLoginForm.style.display = '';
+  adminLoginForm.style.display = 'none';
+  userTab.style.background = '#4f8cff';
+  userTab.style.color = '#fff';
+  adminTab.style.background = '#e0e7ff';
+  adminTab.style.color = '#4f8cff';
+});
+adminTab.addEventListener('click', function() {
+  adminTab.classList.add('active');
+  userTab.classList.remove('active');
+  adminLoginForm.style.display = '';
+  userLoginForm.style.display = 'none';
+  adminTab.style.background = '#4f8cff';
+  adminTab.style.color = '#fff';
+  userTab.style.background = '#e0e7ff';
+  userTab.style.color = '#4f8cff';
+});
+</script>

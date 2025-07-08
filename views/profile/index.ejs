@@ -1,0 +1,240 @@
+<div class="container py-5">
+  <h1 class="mb-5">Profile Settings</h1>
+
+  <div class="grid grid-cols-3 gap-6">
+    <!-- Profile Information Card -->
+    <div class="card col-span-1">
+      <div class="card-header">
+        <h3 class="card-title">Profile Information</h3>
+        <p class="card-description">Update your account information</p>
+      </div>
+      <div class="card-content">
+        <form action="/profile" method="POST">
+          <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-control" value="<%= user.username %>" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Account Card -->
+    <div class="card col-span-1">
+      <div class="card-header">
+        <h3 class="card-title">Account</h3>
+        <p class="card-description">Manage your account settings</p>
+      </div>
+      <div class="card-content">
+        <div class="mb-4">
+          <p class="text-muted mb-1">Account ID</p>
+          <p>
+            <%= user.id %>
+          </p>
+        </div>
+        <div class="mb-4">
+          <p class="text-muted">Account Balance</p>
+          <p class="text-lg font-bold">$<%= typeof user.balance==='number' ? user.balance.toFixed(2) :
+              parseFloat(user.balance || 0).toFixed(2) %>
+          </p>
+        </div>
+        <div class="mt-4">
+          <a href="/wallet" class="btn btn-outline btn-block mb-2">Manage Funds</a>
+          <a href="/auth/logout" class="btn btn-danger btn-block">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Picture Card -->
+    <div class="card col-span-1">
+      <div class="card-header">
+        <h3 class="card-title">Profile Picture</h3>
+        <p class="card-description">Customize your profile image</p>
+      </div>
+      <div class="card-content">
+        <div class="text-center mb-4">
+          <!-- Profile Avatar Display -->
+          <div class="profile-avatar mx-auto"
+            style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; color: #555;">
+            <% if (user.profile_picture) { %>
+              <img src="<%= user.profile_picture %>" alt="<%= user.username %>'s profile picture"
+                style="width: 100%; height: 100%; object-fit: cover;">
+              <% } else { %>
+                <div class="avatar">
+                  <%= user.username.charAt(0).toUpperCase() %>
+                </div>
+                <% } %>
+          </div>
+
+          <!-- Ultra Simple File Upload Form -->
+          <div class="mt-4">
+            <form action="/profile/upload-profile-picture" method="POST" enctype="multipart/form-data" id="upload-form">
+              <div class="file-upload-wrapper">
+                <div id="preview-container" style="display: none; margin: 10px auto;">
+                  <div
+                    style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 2px solid #e0e0e0;">
+                    <img id="image-preview" src="#" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                  <p class="mt-2 mb-3" id="file-name" style="font-size: 0.9rem; color: #666;"></p>
+                </div>
+
+                <div class="mb-3">
+                  <input type="file" name="profile_picture" id="profile_picture" accept="image/jpeg,image/png,image/gif"
+                    class="form-control-file" style="display: none;" onchange="previewImage(this)">
+                  <label for="profile_picture" class="btn btn-primary">
+                    <i class="fas fa-upload mr-1"></i> Select New Picture
+                  </label>
+                </div>
+
+                <button type="submit" id="upload-btn" class="btn btn-success mb-3">
+                  Save as Profile Picture
+                </button>
+              </div>
+              <p class="text-muted mt-2">JPG, GIF or PNG. 1MB max.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Card -->
+  <div class="card mt-6">
+    <div class="card-header">
+      <h3 class="card-title">Change Password</h3>
+      <p class="card-description">Update your password to keep your account secure</p>
+    </div>
+    <div class="card-content">
+      <form action="/profile/change-password" method="POST">
+        <div class="form-group">
+          <label for="current_password" class="form-label">Current Password</label>
+          <input type="password" id="current_password" name="current_password" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="new_password" class="form-label">New Password</label>
+          <input type="password" id="new_password" name="new_password" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">Confirm New Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Change Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden debug info for troubleshooting -->
+<div id="debug-info" style="display: none; border: 1px solid #ddd; margin-top: 20px; padding: 10px; font-size: 12px;">
+  <h4>Debug Information</h4>
+  <pre id="debug-output"></pre>
+</div>
+
+<script>
+  // Simple image preview function
+  function previewImage(input) {
+    const preview = document.getElementById('image-preview');
+    const previewContainer = document.getElementById('preview-container');
+    const fileName = document.getElementById('file-name');
+    const uploadBtn = document.getElementById('upload-btn');
+    const profileAvatar = document.querySelector('.profile-avatar img, .profile-avatar .avatar');
+
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please select a valid image file (JPG, PNG, or GIF)');
+        input.value = '';
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      // Validate file size (1MB max)
+      if (file.size > 1024 * 1024) {
+        alert('File size must be less than 1MB');
+        input.value = '';
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      // Show image preview
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imageData = e.target.result;
+
+        // Update the preview thumbnail
+        preview.src = imageData;
+        previewContainer.style.display = 'block';
+        fileName.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+
+        // Also update the main profile avatar immediately
+        if (profileAvatar) {
+          // If it's an avatar placeholder, replace it with an image
+          if (profileAvatar.classList && profileAvatar.classList.contains('avatar')) {
+            const parentElement = profileAvatar.parentElement;
+
+            // Create new image element
+            const newImg = document.createElement('img');
+            newImg.src = imageData;
+            newImg.alt = "Profile preview";
+            newImg.style.width = "100%";
+            newImg.style.height = "100%";
+            newImg.style.objectFit = "cover";
+
+            // Remove the letter avatar and add the image
+            parentElement.innerHTML = '';
+            parentElement.appendChild(newImg);
+          } else {
+            // If it's already an image, just update the src
+            profileAvatar.src = imageData;
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewContainer.style.display = 'none';
+    }
+  }
+
+  // On page load
+  document.addEventListener('DOMContentLoaded', function () {
+    // Show debug panel with Ctrl+Shift+D
+    document.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        const debugInfo = document.getElementById('debug-info');
+        debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    // Handle form submission
+    const form = document.getElementById('upload-form');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('profile_picture');
+
+        // Check if a file is selected
+        if (!fileInput.files || !fileInput.files[0]) {
+          e.preventDefault();
+          alert('Please select an image to upload.');
+          return;
+        }
+
+        // Disable submit button and show loading state
+        const submitBtn = document.getElementById('upload-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+      });
+    }
+  });
+</script>
