@@ -1,5 +1,5 @@
 -- Use new database
-USE trading_new;
+-- USE trading_new;
 
 -- Drop existing tables if they exist (just in case)
 DROP TABLE IF EXISTS transactions;
