@@ -1,4 +1,18 @@
-﻿node_modules/
+﻿# Node.js dependencies
+node_modules/
+
+# Environment variables
 .env
+
+# Logs
 *.log
-public/uploads/
+
+# IDE & OS-generated files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+coverage/
